@@ -1,5 +1,6 @@
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../middlewares/auth';
+import { ContactParams, CreateContactInput, UpdateContactInput } from '../schemas/contact.schema';
 import * as contactService from '../services/contact.service';
 
 export const getContacts = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -13,10 +14,14 @@ export const getContacts = async (req: AuthenticatedRequest, res: Response, next
   }
 };
 
-export const getContact = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getContact = async (
+  req: AuthenticatedRequest<ContactParams>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const organizationId = req.user!.organizationId;
-    const { id } = req.params as { id: string }; // <-- Solución al error 2345
+    const { id } = req.params;
 
     const contact = await contactService.getContactById(id, organizationId);
     if (!contact) {
@@ -29,7 +34,11 @@ export const getContact = async (req: AuthenticatedRequest, res: Response, next:
   }
 };
 
-export const createContact = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const createContact = async (
+  req: AuthenticatedRequest<Record<string, never>, unknown, CreateContactInput>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const organizationId = req.user!.organizationId;
     const { firstName, lastName, email, phone } = req.body;
@@ -48,10 +57,14 @@ export const createContact = async (req: AuthenticatedRequest, res: Response, ne
   }
 };
 
-export const updateContact = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const updateContact = async (
+  req: AuthenticatedRequest<ContactParams, unknown, UpdateContactInput>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const organizationId = req.user!.organizationId;
-    const { id } = req.params as { id: string }; // <-- Solución al error 2345
+    const { id } = req.params;
 
     const updated = await contactService.updateContact(id, organizationId, req.body);
     if (!updated) {
@@ -64,10 +77,14 @@ export const updateContact = async (req: AuthenticatedRequest, res: Response, ne
   }
 };
 
-export const deleteContact = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const deleteContact = async (
+  req: AuthenticatedRequest<ContactParams>,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const organizationId = req.user!.organizationId;
-    const { id } = req.params as { id: string }; // <-- Solución al error 2345
+    const { id } = req.params;
 
     const deleted = await contactService.deleteContact(id, organizationId);
     if (!deleted) {

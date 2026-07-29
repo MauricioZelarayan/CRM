@@ -7,6 +7,67 @@ import { AuthenticatedRequest } from '../middlewares/auth';
 
 const prisma = new PrismaClient();
 
+export const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password, turnstileToken } = req.body;
+
+    // 1. Validar Turnstile CAPTCHA
+    const isCaptchaValid = await verifyTurnstileToken(turnstileToken, req.ip);
+    if (!isCaptchaValid) {
+      return res.status(400).json({ message: 'Error de validación de seguridad (CAPTCHA inválido).' });
+    }
+
+    // 2. Buscar usuario en base de datos
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { organization: true },
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
+
+    // 3. Verificar contraseña con Bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Credenciales inválidas.' });
+    }
+
+    // 4. Firmar JWT especifíco con HS256
+    const token = jwt.sign(
+      {
+        userId: user.id,
+        organizationId: user.organizationId,
+        role: user.role,
+      },
+      process.env.JWT_SECRET!,
+      { algorithm: 'HS256', expiresIn: '8h' }
+    );
+
+    // 5. Establecer Cookie HttpOnly
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 8 * 60 * 60 * 1000, // 8 horas
+    });
+
+    return res.status(200).json({
+      message: 'Inicio de sesión exitoso.',
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        organizationId: user.organizationId,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { organizationName, firstName, lastName, email, password, turnstileToken } = req.body;

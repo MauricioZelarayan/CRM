@@ -9,6 +9,12 @@ export const createContactSchema = z.object({
   }),
 });
 
+export const getContactByIdSchema = z.object({
+  params: z.object({
+    id: z.string().uuid('ID de contacto inválido'),
+  }),
+});
+
 export const updateContactSchema = z.object({
   params: z.object({
     id: z.string().uuid('ID de contacto inválido'),
@@ -21,8 +27,7 @@ export const updateContactSchema = z.object({
   }),
 });
 
-export const getContactByIdSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('ID de contacto inválido'),
-  }),
-});
+// Tipos inferidos
+export type CreateContactInput = z.infer<typeof createContactSchema>['body'];
+export type ContactParams = z.infer<typeof getContactByIdSchema>['params'];
+export type UpdateContactInput = z.infer<typeof updateContactSchema>['body'];

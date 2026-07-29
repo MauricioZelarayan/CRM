@@ -1,12 +1,18 @@
 import { Router } from 'express';
-import { register } from '../controllers/auth.controller';
+import { register, login, getMe, logout } from '../controllers/auth.controller';
+import { authenticateToken } from '../middlewares/auth';
 import { validate } from '../middlewares/validate';
-import { registerSchema } from '../schemas/auth.schema';
+import { registerSchema, loginSchema } from '../schemas/auth.schema';
 import { authRateLimiter } from '../config/security';
 
 const router = Router();
 
-// Endpoint con Rate Limiter y validación Zod
+// Endpoints Públicos con Rate Limit y Turnstile CAPTCHA
 router.post('/register', authRateLimiter, validate(registerSchema), register);
+router.post('/login', authRateLimiter, validate(loginSchema), login);
+
+// Endpoints Autenticados
+router.get('/me', authenticateToken, getMe);
+router.post('/logout', authenticateToken, logout);
 
 export default router;

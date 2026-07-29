@@ -17,8 +17,6 @@ router.get('/', contactController.getContacts);
 router.get('/:id', validate(getContactByIdSchema), contactController.getContact);
 router.post('/', validate(createContactSchema), contactController.createContact);
 router.put('/:id', validate(updateContactSchema), contactController.updateContact);
-
-// Solo ADMIN o SUPERADMIN pueden eliminar contactos
 router.delete(
   '/:id',
   checkRole(['ADMIN', 'SUPERADMIN']),
