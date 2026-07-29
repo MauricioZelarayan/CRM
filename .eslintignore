@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+coverage/
+.prisma/
+prisma/generated/
+*.config.js
+*.config.cjs
