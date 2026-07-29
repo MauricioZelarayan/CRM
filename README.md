@@ -1,2 +1,2 @@
-# CRM
+# Proyecto personal
 CRM
