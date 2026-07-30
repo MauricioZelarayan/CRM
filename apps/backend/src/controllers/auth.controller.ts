@@ -7,6 +7,10 @@ import { AuthenticatedRequest } from '../middlewares/auth';
 
 const prisma = new PrismaClient();
 
+// Hash dummy estático (corresponde a una contraseña aleatoria cualquiera generada con 12 rounds)
+// Servirá para forzar a bcrypt a hacer el cómputo de 100ms incluso si el usuario no existe.
+const DUMMY_HASH = '$2b$12$JAslXPSF788M1O2.WlgZJeX/Dzjigz07MrMJWys8OMkHhD.Tl/QJ.';
+
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email, password, turnstileToken } = req.body;
@@ -17,23 +21,24 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       return res.status(400).json({ message: 'Error de validación de seguridad (CAPTCHA inválido).' });
     }
 
-    // 2. Buscar usuario en base de datos
+    // 2. Buscar usuario en la base de datos
     const user = await prisma.user.findUnique({
       where: { email },
       include: { organization: true },
     });
 
-    if (!user) {
+    // 3. Obtener el hash objetivo (si el usuario existe usa el real, si no usa el dummy)
+    const targetHash = user ? user.passwordHash : DUMMY_HASH;
+
+    // 4. Ejecutar SIEMPRE bcrypt.compare para igualar los tiempos de CPU (~100ms en ambos casos)
+    const isPasswordValid = await bcrypt.compare(password, targetHash);
+
+    // 5. Si el usuario no existe O la contraseña fue incorrecta, respondemos con el mismo mensaje genérico
+    if (!user || !isPasswordValid) {
       return res.status(401).json({ message: 'Credenciales inválidas.' });
     }
 
-    // 3. Verificar contraseña con Bcrypt
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: 'Credenciales inválidas.' });
-    }
-
-    // 4. Firmar JWT especifíco con HS256
+    // 6. Firmar JWT especifíco con HS256 (OWASP #2)
     const token = jwt.sign(
       {
         userId: user.id,
@@ -44,7 +49,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       { algorithm: 'HS256', expiresIn: '8h' }
     );
 
-    // 5. Establecer Cookie HttpOnly
+    // 7. Establecer Cookie HttpOnly
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -90,7 +95,6 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     // 4. Crear Organización y Usuario dentro de una Transacción
     const result = await prisma.$transaction(async (tx) => {
-      // Generar slug básico para la organización
       const slug = organizationName.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
 
       const organization = await tx.organization.create({
@@ -114,7 +118,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       return { organization, user };
     });
 
-    // 5. Emitir JWT firmada
+    // 5. Emitir JWT firmada (con algoritmo HS256 explícito)
     const token = jwt.sign(
       {
         userId: result.user.id,
@@ -122,7 +126,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
         role: result.user.role,
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '8h' }
+      { algorithm: 'HS256', expiresIn: '8h' } // <-- Agregado por consistencia
     );
 
     // 6. Configurar Cookie HttpOnly (OWASP #2)
