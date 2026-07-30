@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "title": "Entrar",
+    "registerTitle": "Criar Conta",
+    "organizationName": "Nome da Empresa",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "email": "E-mail",
+    "password": "Senha",
+    "submitRegister": "Cadastrar",
+    "submitLogin": "Entrar",
+    "alreadyHaveAccount": "Já tem uma conta? Entre aqui"
+  },
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro inesperado"
+  }
+}

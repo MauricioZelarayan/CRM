@@ -1,0 +1,18 @@
+{
+  "auth": {
+    "title": "Sign In",
+    "registerTitle": "Create Account",
+    "organizationName": "Company Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "password": "Password",
+    "submitRegister": "Register",
+    "submitLogin": "Sign In",
+    "alreadyHaveAccount": "Already have an account? Sign in"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An unexpected error occurred"
+  }
+}
