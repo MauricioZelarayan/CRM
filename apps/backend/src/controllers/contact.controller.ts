@@ -1,9 +1,8 @@
-import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../middlewares/auth';
+import { Request, Response, NextFunction } from 'express';
 import { ContactParams, CreateContactInput, UpdateContactInput } from '../schemas/contact.schema';
 import * as contactService from '../services/contact.service';
 
-export const getContacts = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const getContacts = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const organizationId = req.user!.organizationId;
     const contacts = await contactService.getAllContacts(organizationId);
@@ -15,7 +14,7 @@ export const getContacts = async (req: AuthenticatedRequest, res: Response, next
 };
 
 export const getContact = async (
-  req: AuthenticatedRequest<ContactParams>,
+  req: Request<ContactParams>,
   res: Response,
   next: NextFunction
 ) => {
@@ -35,7 +34,7 @@ export const getContact = async (
 };
 
 export const createContact = async (
-  req: AuthenticatedRequest<Record<string, never>, unknown, CreateContactInput>,
+  req: Request<Record<string, never>, unknown, CreateContactInput>,
   res: Response,
   next: NextFunction
 ) => {
@@ -58,7 +57,7 @@ export const createContact = async (
 };
 
 export const updateContact = async (
-  req: AuthenticatedRequest<ContactParams, unknown, UpdateContactInput>,
+  req: Request<ContactParams, unknown, UpdateContactInput>,
   res: Response,
   next: NextFunction
 ) => {
@@ -78,7 +77,7 @@ export const updateContact = async (
 };
 
 export const deleteContact = async (
-  req: AuthenticatedRequest<ContactParams>,
+  req: Request<ContactParams>,
   res: Response,
   next: NextFunction
 ) => {

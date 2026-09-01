@@ -12,23 +12,41 @@ enum Role {
   USER
 }
 
-model Organization {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+enum DealStage {
+  LEAD
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
 
-  users    User[]
-  contacts Contact[]
+enum ActivityType {
+  NOTE
+  CALL
+  MEETING
+  EMAIL
+}
+
+model Organization {
+  id         String       @id @default(uuid())
+  name       String
+  users      User[]
+  contacts   Contact[]
+  deals      Deal[]       // <-- Relación inversa requerida por Deal
+  activities Activity[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@map("organizations")
 }
 
 model User {
   id             String       @id @default(uuid())
   email          String       @unique
-  passwordHash   String
+  password       String       // Hash con bcrypt (12 rounds)
   firstName      String
-  lastName       String
+  lastName       String?
   role           Role         @default(USER)
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
@@ -36,6 +54,7 @@ model User {
   updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
+  @@map("users")
 }
 
 model Contact {
@@ -46,8 +65,45 @@ model Contact {
   phone          String?
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  deals          Deal[]       // <-- Relación inversa requerida por Deal
+  activities     Activity[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
   @@index([organizationId])
+  @@map("contacts")
+}
+
+model Deal {
+  id             String       @id @default(uuid())
+  title          String
+  value          Decimal      @db.Decimal(12, 2)
+  stage          DealStage    @default(LEAD)
+  contactId      String?
+  contact        Contact?     @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([contactId])
+  @@map("deals")
+}
+
+model Activity {
+  id             String       @id @default(uuid())
+  type           ActivityType @default(NOTE)
+  title          String
+  description    String?
+  contactId      String
+  contact        Contact      @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
+  @@index([contactId])
+  @@map("activities")
 }

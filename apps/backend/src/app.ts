@@ -4,6 +4,8 @@ import { helmetConfig, corsConfig } from './config/security';
 import { errorHandler } from './middlewares/errorHandler';
 import authRoutes from './routes/auth.routes';
 import contactRoutes from './routes/contact.routes';
+import dealRoutes from './routes/deal.routes';
+
 
 const app = express();
 
@@ -20,7 +22,17 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);
 
+// Rutas de Oportunidades (Deals)
+app.use('/api/deals', dealRoutes);
+
 // Manejador de errores
 app.use(errorHandler);
+
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(` Servidor CRM corriendo en http://localhost:${PORT}`);
+});
 
 export default app;

@@ -1,164 +1,54 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-import { verifyTurnstileToken } from '../services/turnstile.service';
-import { AuthenticatedRequest } from '../middlewares/auth';
+import { prisma } from '../config/prisma';
 
-const prisma = new PrismaClient();
+const DUMMY_HASH = '$2b$12$e8YvXvXvXvXvXvXvXvXvXuK9Y8Q7W6E5R4T3Y2U1I0O9P8A7S6D5F';
+const COOKIE_NAME = 'token';
 
-// Hash dummy estático (corresponde a una contraseña aleatoria cualquiera generada con 12 rounds)
-// Servirá para forzar a bcrypt a hacer el cómputo de 100ms incluso si el usuario no existe.
-const DUMMY_HASH = '$2b$12$JAslXPSF788M1O2.WlgZJeX/Dzjigz07MrMJWys8OMkHhD.Tl/QJ.';
-
-export const login = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { email, password, turnstileToken } = req.body;
-
-    // 1. Validar Turnstile CAPTCHA
-    const isCaptchaValid = await verifyTurnstileToken(turnstileToken, req.ip);
-    if (!isCaptchaValid) {
-      return res.status(400).json({ message: 'Error de validación de seguridad (CAPTCHA inválido).' });
-    }
-
-    // 2. Buscar usuario en la base de datos
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { organization: true },
-    });
-
-    // 3. Obtener el hash objetivo (si el usuario existe usa el real, si no usa el dummy)
-    const targetHash = user ? user.passwordHash : DUMMY_HASH;
-
-    // 4. Ejecutar SIEMPRE bcrypt.compare para igualar los tiempos de CPU (~100ms en ambos casos)
-    const isPasswordValid = await bcrypt.compare(password, targetHash);
-
-    // 5. Si el usuario no existe O la contraseña fue incorrecta, respondemos con el mismo mensaje genérico
-    if (!user || !isPasswordValid) {
-      return res.status(401).json({ message: 'Credenciales inválidas.' });
-    }
-
-    // 6. Firmar JWT especifíco con HS256 (OWASP #2)
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        organizationId: user.organizationId,
-        role: user.role,
-      },
-      process.env.JWT_SECRET!,
-      { algorithm: 'HS256', expiresIn: '8h' }
-    );
-
-    // 7. Establecer Cookie HttpOnly
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 8 * 60 * 60 * 1000, // 8 horas
-    });
-
-    return res.status(200).json({
-      message: 'Inicio de sesión exitoso.',
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        organizationId: user.organizationId,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
+// Helper para emitir cookies HttpOnly seguras (OWASP #2 y #4)
+const setAuthCookie = (res: Response, token: string) => {
+  res.cookie(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
+  });
 };
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { organizationName, firstName, lastName, email, password, turnstileToken } = req.body;
+    const { email, password, firstName, lastName, organizationName } = req.body;
 
-    // 1. Validar Turnstile CAPTCHA
-    const isCaptchaValid = await verifyTurnstileToken(turnstileToken, req.ip);
-    if (!isCaptchaValid) {
-      return res.status(400).json({ message: 'Error de validación de seguridad (CAPTCHA inválido).' });
-    }
+    const existingUser = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
 
-    // 2. Verificar si el usuario ya existe
-    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return res.status(409).json({ message: 'El correo electrónico ya está registrado.' });
+      res.status(409).json({ message: 'El correo electrónico ya se encuentra registrado' });
+      return;
     }
 
-    // 3. Hash de contraseña con bcrypt (OWASP #4)
-    const saltRounds = 12;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    // Hash de contraseña con 12 rounds de bcrypt (OWASP #4)
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    // 4. Crear Organización y Usuario dentro de una Transacción
+    // Transacción atómica: Crea el Tenant (Organización) y el Administrador inicial
     const result = await prisma.$transaction(async (tx) => {
-      const slug = organizationName.toLowerCase().replace(/[^a-z0-9]/g, '-') + '-' + Date.now();
-
       const organization = await tx.organization.create({
         data: {
           name: organizationName,
-          slug,
         },
       });
 
       const user = await tx.user.create({
         data: {
-          email,
-          passwordHash,
+          email: email.toLowerCase(),
+          password: hashedPassword, // Resuelto: campo 'password' según schema.prisma
           firstName,
-          lastName,
+          lastName: lastName || null,
           role: 'ADMIN',
           organizationId: organization.id,
         },
-      });
-
-      return { organization, user };
-    });
-
-    // 5. Emitir JWT firmada (con algoritmo HS256 explícito)
-    const token = jwt.sign(
-      {
-        userId: result.user.id,
-        organizationId: result.organization.id,
-        role: result.user.role,
-      },
-      process.env.JWT_SECRET!,
-      { algorithm: 'HS256', expiresIn: '8h' } // <-- Agregado por consistencia
-    );
-
-    // 6. Configurar Cookie HttpOnly (OWASP #2)
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 8 * 60 * 60 * 1000, // 8 horas
-    });
-
-    return res.status(201).json({
-      message: 'Registro exitoso.',
-      user: {
-        id: result.user.id,
-        email: result.user.email,
-        firstName: result.user.firstName,
-        lastName: result.user.lastName,
-        role: result.user.role,
-        organizationId: result.organization.id,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const getMe = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    try {
-      const userId = req.user!.userId;
-
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
         select: {
           id: true,
           email: true,
@@ -166,33 +56,126 @@ export const getMe = async (req: AuthenticatedRequest, res: Response, next: Next
           lastName: true,
           role: true,
           organizationId: true,
-          organization: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-            },
-          },
+          createdAt: true,
         },
       });
 
-      if (!user) {
-        return res.status(404).json({ message: 'Usuario no encontrado.' });
-      }
+      return { organization, user };
+    });
 
-      return res.status(200).json({ data: user });
-    } catch (error) {
-      next(error);
+    const token = jwt.sign(
+      {
+        id: result.user.id,
+        userId: result.user.id,
+        email: result.user.email,
+        role: result.user.role,
+        organizationId: result.user.organizationId,
+      },
+      process.env.JWT_SECRET || 'super_secret_jwt_key_crm_2026',
+      { expiresIn: '7d', algorithm: 'HS256' }
+    );
+
+    setAuthCookie(res, token);
+
+    res.status(201).json({
+      message: 'Registro exitoso',
+      data: result.user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+      include: { organization: true },
+    });
+
+    // Mitigación de Timing Attacks (OWASP #2): si el usuario no existe, corre un hash dummy
+    const passwordToCompare = user ? user.password : DUMMY_HASH;
+    const isMatch = await bcrypt.compare(password, passwordToCompare);
+
+    if (!user || !isMatch) {
+      res.status(401).json({ message: 'Credenciales inválidas' });
+      return;
     }
-  };
 
-export const logout = async (req: Request, res: Response) => {
-  // Limpiamos la cookie pasando los mismos parámetros con los que fue creada
-  res.clearCookie('token', {
+    const token = jwt.sign(
+      {
+        id: user.id,
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+        organizationId: user.organizationId,
+      },
+      process.env.JWT_SECRET || 'super_secret_jwt_key_crm_2026',
+      { expiresIn: '7d', algorithm: 'HS256' }
+    );
+
+    setAuthCookie(res, token);
+
+    res.json({
+      message: 'Inicio de sesión exitoso',
+      data: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        organizationId: user.organizationId,
+        organizationName: user.organization.name,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getMe = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ message: 'No autenticado' });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        organizationId: true,
+        organization: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+      return;
+    }
+
+    res.json({ data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (_req: Request, res: Response): Promise<void> => {
+  res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
   });
-
-  return res.status(200).json({ message: 'Sesión cerrada correctamente.' });
+  res.json({ message: 'Sesión cerrada exitosamente' });
 };

@@ -1,18 +1,78 @@
 {
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrió un error inesperado",
+    "save": "Guardar",
+    "cancel": "Cancelar"
+  },
   "auth": {
-    "title": "Iniciar Sesión",
+    "loginTitle": "Iniciar Sesión",
     "registerTitle": "Crear Cuenta",
-    "organizationName": "Nombre de la Empresa",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "organizationName": "Nombre de la Organización",
+    "submitLogin": "Entrar",
+    "submitRegister": "Registrarse",
+    "dontHaveAccount": "¿No tienes cuenta? Regístrate aquí",
+    "alreadyHaveAccount": "¿Ya tienes cuenta? Inicia sesión"
+  },
+  "dashboard": {
+    "welcome": "¡Hola, {{name}}!",
+    "subtitle": "Resumen general del tenant y métricas de adquisición.",
+    "roleLabel": "Rol:",
+    "totalContacts": "Total Contactos",
+    "totalContactsDesc": "Leads en base de datos",
+    "validatedEmails": "Correos Validados",
+    "validatedEmailsDesc": "Listos para campañas",
+    "registeredPhones": "Teléfonos Registrados",
+    "registeredPhonesDesc": "Contactabilidad directa",
+    "completionRate": "Tasa de Completitud",
+    "completionRateDesc": "Datos completos",
+    "recentContacts": "Últimos Contactos Añadidos",
+    "noData": "No hay datos suficientes para mostrar.",
+    "noEmail": "Sin correo"
+  },
+  "contacts": {
+    "title": "Contactos",
+    "addContact": "Nuevo Contacto",
     "firstName": "Nombre",
     "lastName": "Apellido",
     "email": "Correo Electrónico",
-    "password": "Contraseña",
-    "submitRegister": "Registrarse",
-    "submitLogin": "Ingresar",
-    "alreadyHaveAccount": "¿Ya tienes una cuenta? Inicia sesión"
+    "phone": "Teléfono",
+    "actions": "Acciones",
+    "delete": "Eliminar"
   },
-  "common": {
-    "loading": "Cargando...",
-    "error": "Ocurrió un error inesperado"
+
+  "userMenu": {
+  "profile": "Mi Perfil",
+  "settings": "Configuración",
+  "language": "Idioma",
+  "logout": "Cerrar Sesión"
+  },
+
+  "deals": {
+  "title": "Embudo de Ventas",
+  "addDeal": "Nueva Oportunidad",
+  "totalPipeline": "Valor Total del Pipeline",
+  "wonDeals": "Ganados",
+  "lostDeals": "Perdidos",
+  "stages": {
+    "LEAD": "Contacto Inicial",
+    "QUALIFIED": "Calificado",
+    "PROPOSAL": "Propuesta",
+    "NEGOTIATION": "Negociación",
+    "WON": "Ganado",
+    "LOST": "Perdido"
+  },
+
+  "form": {
+    "title": "Título del Trato",
+    "value": "Valor Estimado ($)",
+    "stage": "Etapa Inicial",
+    "contact": "Contacto Asociado",
+    "selectContact": "Seleccionar contacto..."
   }
+}
 }

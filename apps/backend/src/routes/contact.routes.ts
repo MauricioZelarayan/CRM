@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middlewares/auth';
+import { authMiddleware } from '../middlewares/auth';
 import { checkRole } from '../middlewares/checkRole';
 import { validate } from '../middlewares/validate';
 import {
@@ -11,7 +11,7 @@ import * as contactController from '../controllers/contact.controller';
 
 const router = Router();
 
-router.use(authenticateToken);
+router.use(authMiddleware);
 
 router.get('/', contactController.getContacts);
 router.get('/:id', validate(getContactByIdSchema), contactController.getContact);

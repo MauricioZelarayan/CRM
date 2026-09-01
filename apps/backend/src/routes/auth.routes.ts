@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { register, login, getMe, logout } from '../controllers/auth.controller';
-import { authenticateToken } from '../middlewares/auth';
+import { authMiddleware } from '../middlewares/auth';
 import { validate } from '../middlewares/validate';
 import { registerSchema, loginSchema } from '../schemas/auth.schema';
 import { loginRateLimiter, registerRateLimiter } from '../config/security';
@@ -12,7 +12,7 @@ router.post('/register', registerRateLimiter, validate(registerSchema), register
 router.post('/login', loginRateLimiter, validate(loginSchema), login);
 
 // Endpoints Autenticados
-router.get('/me', authenticateToken, getMe);
-router.post('/logout', authenticateToken, logout);
+router.get('/me', authMiddleware, getMe);
+router.post('/logout', authMiddleware, logout);
 
 export default router;

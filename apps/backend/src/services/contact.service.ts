@@ -1,8 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/prisma';
 
-const prisma = new PrismaClient();
-
-interface CreateContactDTO {
+export interface CreateContactDTO {
   firstName: string;
   lastName?: string;
   email?: string;
@@ -10,7 +8,7 @@ interface CreateContactDTO {
   organizationId: string;
 }
 
-interface UpdateContactDTO {
+export interface UpdateContactDTO {
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -18,23 +16,23 @@ interface UpdateContactDTO {
 }
 
 export const getAllContacts = async (organizationId: string) => {
-  return await prisma.contact.findMany({
+  return prisma.contact.findMany({
     where: { organizationId },
     orderBy: { createdAt: 'desc' },
   });
 };
 
 export const getContactById = async (id: string, organizationId: string) => {
-  return await prisma.contact.findFirst({
+  return prisma.contact.findFirst({
     where: {
       id,
-      organizationId, // Aislamiento por Tenant
+      organizationId, // Aislamiento multi-tenant obligatorio (OWASP #3)
     },
   });
 };
 
 export const createContact = async (data: CreateContactDTO) => {
-  return await prisma.contact.create({
+  return prisma.contact.create({
     data: {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -46,27 +44,28 @@ export const createContact = async (data: CreateContactDTO) => {
 };
 
 export const updateContact = async (id: string, organizationId: string, data: UpdateContactDTO) => {
-  // Aseguramos primero que el recurso pertenezca a la organización antes de actualizar
+  // Verificamos pertenencia al tenant antes de actualizar
   const contact = await prisma.contact.findFirst({
     where: { id, organizationId },
   });
 
   if (!contact) return null;
 
-  return await prisma.contact.update({
+  return prisma.contact.update({
     where: { id },
     data,
   });
 };
 
 export const deleteContact = async (id: string, organizationId: string) => {
+  // Verificamos pertenencia al tenant antes de eliminar
   const contact = await prisma.contact.findFirst({
     where: { id, organizationId },
   });
 
   if (!contact) return null;
 
-  return await prisma.contact.delete({
+  return prisma.contact.delete({
     where: { id },
   });
 };

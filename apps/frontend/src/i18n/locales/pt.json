@@ -1,18 +1,76 @@
 {
+  "common": {
+    "loading": "Carregando...",
+    "error": "Ocorreu um erro inesperado",
+    "save": "Salvar",
+    "cancel": "Cancelar"
+  },
   "auth": {
-    "title": "Entrar",
+    "loginTitle": "Entrar",
     "registerTitle": "Criar Conta",
-    "organizationName": "Nome da Empresa",
+    "email": "E-mail",
+    "password": "Senha",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "organizationName": "Nome da Organização",
+    "submitLogin": "Entrar",
+    "submitRegister": "Registrar-se",
+    "dontHaveAccount": "Não tem uma conta? Registre-se",
+    "alreadyHaveAccount": "Já tem uma conta? Entrar"
+  },
+  "dashboard": {
+    "welcome": "Olá, {{name}}!",
+    "subtitle": "Visão geral do tenant e métricas de aquisição.",
+    "roleLabel": "Função:",
+    "totalContacts": "Total de Contatos",
+    "totalContactsDesc": "Leads no banco de dados",
+    "validatedEmails": "E-mails Validados",
+    "validatedEmailsDesc": "Prontos para campanhas",
+    "registeredPhones": "Telefones Registrados",
+    "registeredPhonesDesc": "Contato direto",
+    "completionRate": "Taxa de Preenchimento",
+    "completionRateDesc": "Perfis completos",
+    "recentContacts": "Últimos Contatos Adicionados",
+    "noData": "Sem dados suficientes para exibir.",
+    "noEmail": "Sem e-mail"
+  },
+  "contacts": {
+    "title": "Contatos",
+    "addContact": "Novo Contato",
     "firstName": "Nome",
     "lastName": "Sobrenome",
     "email": "E-mail",
-    "password": "Senha",
-    "submitRegister": "Cadastrar",
-    "submitLogin": "Entrar",
-    "alreadyHaveAccount": "Já tem uma conta? Entre aqui"
+    "phone": "Telefone",
+    "actions": "Ações",
+    "delete": "Excluir"
   },
-  "common": {
-    "loading": "Carregando...",
-    "error": "Ocorreu um erro inesperado"
+  "userMenu": {
+  "profile": "Meu Perfil",
+  "settings": "Configurações",
+  "language": "Idioma",
+  "logout": "Sair"
+  },
+  "deals": {
+  "title": "Funil de Vendas",
+  "addDeal": "Nova Oportunidade",
+  "totalPipeline": "Valor Total do Pipeline",
+  "wonDeals": "Ganhos",
+  "lostDeals": "Perdidos",
+  "stages": {
+    "LEAD": "Lead",
+    "QUALIFIED": "Qualificado",
+    "PROPOSAL": "Proposta",
+    "NEGOTIATION": "Negociação",
+    "WON": "Ganho",
+    "LOST": "Perdido"
+  },
+  "form": {
+    "title": "Título do Negócio",
+    "value": "Valor Estimado ($)",
+    "stage": "Etapa Inicial",
+    "contact": "Contato Associado",
+    "selectContact": "Selecionar contato..."
   }
+}
+  
 }

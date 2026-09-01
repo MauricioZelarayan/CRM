@@ -4,30 +4,21 @@ import { useTranslation } from 'react-i18next';
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
-
   return (
-    <div className="flex gap-2 text-sm">
-      <button
-        onClick={() => changeLanguage('es')}
-        className={`px-2 py-1 rounded ${i18n.language === 'es' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-      >
-        ES
-      </button>
-      <button
-        onClick={() => changeLanguage('en')}
-        className={`px-2 py-1 rounded ${i18n.language === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-      >
-        EN
-      </button>
-      <button
-        onClick={() => changeLanguage('pt')}
-        className={`px-2 py-1 rounded ${i18n.language === 'pt' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-      >
-        PT
-      </button>
+    <div className="flex items-center gap-1 bg-[#07111F] border border-[#22344A] rounded-xl p-1">
+      {['es', 'en', 'pt'].map((lang) => (
+        <button
+          key={lang}
+          onClick={() => i18n.changeLanguage(lang)}
+          className={`px-2.5 py-1 text-xs font-bold rounded-lg transition uppercase ${
+            i18n.language === lang
+              ? 'bg-[#7CC7D9] text-[#07111F]'
+              : 'text-[#9AAABD] hover:text-[#F8F7F2]'
+          }`}
+        >
+          {lang}
+        </button>
+      ))}
     </div>
   );
 };
