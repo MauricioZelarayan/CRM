@@ -64,13 +64,19 @@
     "WON": "Ganho",
     "LOST": "Perdido"
   },
-  "form": {
-    "title": "Título do Negócio",
-    "value": "Valor Estimado ($)",
-    "stage": "Etapa Inicial",
-    "contact": "Contato Associado",
-    "selectContact": "Selecionar contato..."
+    "form": {
+      "title": "Título do Negócio",
+      "value": "Valor Estimado ($)",
+      "stage": "Etapa Inicial",
+      "contact": "Contato Associado",
+      "selectContact": "Selecionar contato..."
+    }
+  },
+  
+  "navigation": {
+    "home": "Início",
+    "contacts": "Contatos",
+    "deals": "Negócios"
   }
-}
   
 }

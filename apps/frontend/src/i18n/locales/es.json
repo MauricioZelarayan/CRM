@@ -58,21 +58,27 @@
   "totalPipeline": "Valor Total del Pipeline",
   "wonDeals": "Ganados",
   "lostDeals": "Perdidos",
-  "stages": {
-    "LEAD": "Contacto Inicial",
-    "QUALIFIED": "Calificado",
-    "PROPOSAL": "Propuesta",
-    "NEGOTIATION": "Negociación",
-    "WON": "Ganado",
-    "LOST": "Perdido"
+    "stages": {
+      "LEAD": "Contacto Inicial",
+      "QUALIFIED": "Calificado",
+      "PROPOSAL": "Propuesta",
+      "NEGOTIATION": "Negociación",
+      "WON": "Ganado",
+      "LOST": "Perdido"
+    },
+    "form": {
+      "title": "Título del Trato",
+      "value": "Valor Estimado ($)",
+      "stage": "Etapa Inicial",
+      "contact": "Contacto Asociado",
+      "selectContact": "Seleccionar contacto..."
+    }
   },
 
-  "form": {
-    "title": "Título del Trato",
-    "value": "Valor Estimado ($)",
-    "stage": "Etapa Inicial",
-    "contact": "Contacto Asociado",
-    "selectContact": "Seleccionar contacto..."
+  "navigation": {
+    "home": "Inicio",
+    "contacts": "Contactos",
+    "deals": "Deals"
   }
-}
+
 }

@@ -64,12 +64,17 @@
     "WON": "Won",
     "LOST": "Lost"
   },
-  "form": {
-    "title": "Deal Title",
-    "value": "Estimated Value ($)",
-    "stage": "Initial Stage",
-    "contact": "Associated Contact",
-    "selectContact": "Select contact..."
+    "form": {
+      "title": "Deal Title",
+      "value": "Estimated Value ($)",
+      "stage": "Initial Stage",
+      "contact": "Associated Contact",
+      "selectContact": "Select contact..."
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "contacts": "Contacts",
+    "deals": "Deals"
   }
-}
 }
