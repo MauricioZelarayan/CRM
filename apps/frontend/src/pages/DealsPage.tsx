@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { dealService, type Deal, type DealStage } from '../services/deal.service';
@@ -16,70 +16,79 @@ export const DealsPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draggedDealId, setDraggedDealId] = useState<string | null>(null);
 
   const canDelete = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
 
-  const loadDeals = () => {
-    dealService
-      .getAll()
-      .then((res: { data: { data: Deal[] } }) => {
-        setDeals(res.data.data);
-        setError(null);
-      })
-      .catch((err: unknown) => {
-        if (axios.isAxiosError(err)) {
-          setError(err.response?.data?.message || t('common.error'));
-        } else {
-          setError(t('common.error'));
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    dealService
-      .getAll()
-      .then((res: { data: { data: Deal[] } }) => {
-        if (isMounted) {
-          setDeals(res.data.data);
-          setError(null);
-        }
-      })
-      .catch((err: unknown) => {
-        if (isMounted) {
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || t('common.error'));
-          } else {
-            setError(t('common.error'));
-          }
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [t]);
-
-  const handleStageChange = async (dealId: string, newStage: DealStage) => {
+  // 1. Carga centralizada con useCallback para evitar código duplicado
+  const loadDeals = useCallback(async () => {
     try {
-      await dealService.updateStage(dealId, newStage);
-      setDeals((prev) =>
-        prev.map((d) => (d.id === dealId ? { ...d, stage: newStage } : d))
-      );
+      setLoading(true);
+      const res = await dealService.getAll();
+      // Si tu backend responde { data: Deal[] } y el servicio devuelve response.data:
+      setDeals(res.data.data); // Asegurate de que sea res.data si res es { data: Deal[] }, o directamente res si el service extrae el array
+      setError(null);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || t('common.error'));
+      } else {
+        setError(t('common.error'));
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  useEffect(() => {
+    const initFetch = async () => {
+      await loadDeals();
+    };
+    initFetch();
+  }, [loadDeals]);
+
+  // 2. Manejador de cambio de etapa (reutilizado por Drag & Drop y por Select)
+  const handleStageChange = async (dealId: string, newStage: DealStage) => {
+    const originalDeals = [...deals];
+
+    // Actualización optimista en UI
+    setDeals((prev) =>
+      prev.map((d) => (d.id === dealId ? { ...d, stage: newStage } : d))
+    );
+
+    try {
+      await dealService.updateStage(dealId, newStage);
+    } catch (err: unknown) {
+      // Revertir si el servidor rechaza
+      setDeals(originalDeals);
+      if (axios.isAxiosError(err)) {
         alert(err.response?.data?.message || t('common.error'));
+      } else {
+        alert(t('common.error'));
       }
     }
+  };
+
+  // 3. Eventos Drag and Drop nativos de HTML5
+  const handleDragStart = (dealId: string) => {
+    setDraggedDealId(dealId);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault(); // Imprescindible para habilitar la zona de drop
+  };
+
+  const handleDrop = async (targetStage: DealStage) => {
+    if (!draggedDealId) return;
+
+    const currentDeal = deals.find((d) => d.id === draggedDealId);
+    if (!currentDeal || currentDeal.stage === targetStage) {
+      setDraggedDealId(null);
+      return;
+    }
+
+    const id = draggedDealId;
+    setDraggedDealId(null);
+    await handleStageChange(id, targetStage);
   };
 
   const handleDelete = async (dealId: string) => {
@@ -90,6 +99,8 @@ export const DealsPage: React.FC = () => {
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         alert(err.response?.data?.message || t('common.error'));
+      } else {
+        alert(t('common.error'));
       }
     }
   };
@@ -101,7 +112,8 @@ export const DealsPage: React.FC = () => {
 
   return (
     <DashboardLayout>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* Tarjetas de Métricas */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
         <div className="bg-[var(--bg-card)] border border-[var(--border-color)] p-5 rounded-2xl shadow-sm transition-colors">
           <p className="text-xs font-semibold text-[var(--text-muted)]">{t('deals.totalPipeline')}</p>
           <p className="text-3xl font-black text-[var(--text-main)] mt-1">
@@ -133,7 +145,7 @@ export const DealsPage: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-3.5 bg-[var(--color-danger-bg)] border border-[var(--color-danger)] text-[var(--color-danger)] rounded-xl text-xs">
+        <div className="mb-4 p-3.5 bg-[var(--color-danger-bg)] border border-[var(--color-danger)] text-[var(--color-danger)] rounded-xl text-xs">
           {error}
         </div>
       )}
@@ -141,7 +153,7 @@ export const DealsPage: React.FC = () => {
       {loading ? (
         <div className="py-16 text-center text-xs text-[var(--text-muted)]">{t('common.loading')}</div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto pb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 overflow-x-auto pb-4 items-start">
           {STAGES.map((stg) => {
             const stageDeals = deals.filter((d) => d.stage === stg);
             const stageTotal = stageDeals.reduce((acc, curr) => acc + Number(curr.value || 0), 0);
@@ -149,8 +161,11 @@ export const DealsPage: React.FC = () => {
             return (
               <div
                 key={stg}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(stg)}
                 className="bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl p-3 flex flex-col min-w-[210px] shadow-sm transition-colors"
               >
+                {/* Cabecera de Etapa */}
                 <div className="pb-3 border-b border-[var(--border-color)] mb-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[var(--text-main)] truncate">
@@ -165,11 +180,16 @@ export const DealsPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[550px] pr-1">
+                {/* Zona de Drop y Tarjetas */}
+                <div className="space-y-2.5 flex-1 overflow-y-auto max-h-[550px] pr-1 min-h-[120px]">
                   {stageDeals.map((deal) => (
                     <div
                       key={deal.id}
-                      className="p-3 bg-[var(--bg-main)] border border-[var(--border-color)] rounded-xl hover:border-[var(--color-primary)]/60 transition shadow-sm"
+                      draggable
+                      onDragStart={() => handleDragStart(deal.id)}
+                      className={`p-3 bg-[var(--bg-main)] border border-[var(--border-color)] rounded-xl hover:border-[var(--color-primary)]/60 transition shadow-sm cursor-grab active:cursor-grabbing ${
+                        draggedDealId === deal.id ? 'opacity-40 scale-95 border-dashed' : ''
+                      }`}
                     >
                       <p className="text-xs font-bold text-[var(--text-main)] leading-tight">{deal.title}</p>
                       <p className="text-xs font-mono font-bold text-[var(--color-secondary)] mt-1">
@@ -209,8 +229,9 @@ export const DealsPage: React.FC = () => {
                       </div>
                     </div>
                   ))}
+
                   {stageDeals.length === 0 && (
-                    <div className="py-6 text-center text-[10px] text-[var(--text-muted)] italic">
+                    <div className="h-20 flex items-center justify-center border-2 border-dashed border-[var(--border-color)] rounded-xl text-[10px] text-[var(--text-muted)] italic">
                       Sin oportunidades
                     </div>
                   )}

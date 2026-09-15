@@ -70,7 +70,9 @@
       "stage": "Etapa Inicial",
       "contact": "Contato Associado",
       "selectContact": "Selecionar contato..."
-    }
+    },
+    "noDeals": "Sem negócios",
+    "contact": "Contato"
   },
 
   "navigation": {
