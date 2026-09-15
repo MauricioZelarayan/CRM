@@ -9,6 +9,9 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ThemeProvider } from './context/ThemeContext';
 import { DealsPage } from './pages/DealsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { WorkflowsPage } from './pages/WorkflowsPage';
+
+
 
 export default function App() {
   return (
@@ -28,6 +31,7 @@ export default function App() {
               {/* Rutas Exclusivas para Administradores */}
               <Route element={<RoleRoute allowedRoles={['ADMIN', 'SUPERADMIN']} />}>
                 <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/workflows" element={<WorkflowsPage />} />
               </Route>
             </Route>
 

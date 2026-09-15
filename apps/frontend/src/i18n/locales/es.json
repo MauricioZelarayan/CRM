@@ -115,6 +115,29 @@
     "invite": "Invitar Miembro",
     "columns": { "user": "Usuario", "role": "Rol", "date": "Fecha de Alta", "actions": "Acciones" },
     "roles": { "ADMIN": "Administrador", "USER": "Vendedor / Usuario" }
+  },
+  "workflows": {
+    "title": "Reglas de Automatización",
+    "subtitle": "Configura disparadores automáticos para eventos comerciales y seguimiento",
+    "create": "Nueva Regla",
+    "table": {
+      "name": "Nombre",
+      "trigger": "Disparador",
+      "actions": "Acciones Configuradas",
+      "status": "Estado",
+      "actionsCol": "Acciones"
+    },
+    "triggers": {
+      "DEAL_STAGE_CHANGED": "Cambio de etapa en Deal",
+      "DEAL_WON": "Deal marcado como Ganado (WON)",
+      "CONTACT_CREATED": "Nuevo contacto registrado"
+    },
+    "actionTypes": {
+      "CREATE_TASK": "Crear tarea/nota automática",
+      "SEND_EMAIL": "Enviar correo programado",
+      "NOTIFY_TEAM": "Notificar al equipo comercial"
+    },
+    "noWorkflows": "No hay reglas de automatización activas."
   }
 
 }

@@ -112,5 +112,28 @@
     "invite": "Convidar Membro",
     "columns": { "user": "Usuário", "role": "Função", "date": "Data de Entrada", "actions": "Ações" },
     "roles": { "ADMIN": "Administrador", "USER": "Vendedor / Usuário" }
+  },
+  "workflows": {
+    "title": "Automation Rules",
+    "subtitle": "Configure automated triggers for sales events and customer follow-up",
+    "create": "New Rule",
+    "table": {
+      "name": "Name",
+      "trigger": "Trigger",
+      "actions": "Configured Actions",
+      "status": "Status",
+      "actionsCol": "Actions"
+    },
+    "triggers": {
+      "DEAL_STAGE_CHANGED": "Deal stage changed",
+      "DEAL_WON": "Deal marked as Won",
+      "CONTACT_CREATED": "New contact created"
+    },
+    "actionTypes": {
+      "CREATE_TASK": "Create automatic task/note",
+      "SEND_EMAIL": "Send scheduled email",
+      "NOTIFY_TEAM": "Notify sales team"
+    },
+    "noWorkflows": "No active automation rules found."
   }
 }

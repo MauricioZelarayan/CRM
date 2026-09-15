@@ -10,6 +10,7 @@ import activityRoutes from './routes/activity.routes';
 import teamRoutes from './routes/team.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import exportRoutes from './routes/export.routes';
+import workflowRoutes from './routes/workflow.routes';
 
 
 const app = express();
@@ -41,6 +42,9 @@ app.use('/api/analytics', analyticsRoutes);
 
 // Rutas de Exportación de Datos
 app.use('/api/export', exportRoutes);
+
+// Rutas de Workflows
+app.use('/api/workflows', workflowRoutes);
 
 // Manejador de errores
 app.use(errorHandler);

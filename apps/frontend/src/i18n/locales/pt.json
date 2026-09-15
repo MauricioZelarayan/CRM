@@ -113,6 +113,29 @@
     "invite": "Invite Member",
     "columns": { "user": "User", "role": "Role", "date": "Joined Date", "actions": "Actions" },
     "roles": { "ADMIN": "Administrator", "USER": "Sales / User" }
+  },
+  "workflows": {
+    "title": "Regras de Automação",
+    "subtitle": "Configure gatilhos automáticos para eventos comerciais e acompanhamento",
+    "create": "Nova Regra",
+    "table": {
+      "name": "Nome",
+      "trigger": "Gatilho",
+      "actions": "Ações Configuradas",
+      "status": "Status",
+      "actionsCol": "Ações"
+    },
+    "triggers": {
+      "DEAL_STAGE_CHANGED": "Mudança de estágio no Negócio",
+      "DEAL_WON": "Negócio marcado como Ganho",
+      "CONTACT_CREATED": "Novo contato registrado"
+    },
+    "actionTypes": {
+      "CREATE_TASK": "Criar tarefa/nota automática",
+      "SEND_EMAIL": "Enviar e-mail programado",
+      "NOTIFY_TEAM": "Notificar equipe de vendas"
+    },
+    "noWorkflows": "Nenhuma regra de automação ativa encontrada."
   }
   
 }

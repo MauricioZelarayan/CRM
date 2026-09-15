@@ -117,6 +117,23 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                   </svg>
                   {t('navigation.settings')}
                 </NavLink>
+
+                {/* Automatizaciones / Workflows */}
+                <NavLink
+                  to="/workflows"
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      isActive
+                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] font-bold shadow-sm'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)]'
+                    }`
+                  }
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  Automatizaciones
+                </NavLink>
               </div>
             )}
           </nav>
