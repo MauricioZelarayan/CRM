@@ -1,3 +1,4 @@
+import './config/env'; // Validación temprana de Zod env (Fail-Fast)
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { helmetConfig, corsConfig } from './config/security';
@@ -5,6 +6,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import authRoutes from './routes/auth.routes';
 import contactRoutes from './routes/contact.routes';
 import dealRoutes from './routes/deal.routes';
+import activityRoutes from './routes/activity.routes';
 
 
 const app = express();
@@ -24,6 +26,9 @@ app.use('/api/contacts', contactRoutes);
 
 // Rutas de Oportunidades (Deals)
 app.use('/api/deals', dealRoutes);
+
+// Rutas de Actividades (Activities)
+app.use('/api/activities', activityRoutes);
 
 // Manejador de errores
 app.use(errorHandler);

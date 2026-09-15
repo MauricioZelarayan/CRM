@@ -79,6 +79,22 @@
     "home": "Inicio",
     "contacts": "Contactos",
     "deals": "Deals"
+  },
+  "activities": {
+  "title": "Historial de Actividades",
+  "addActivity": "Registrar Actividad",
+  "empty": "No hay actividades registradas para este contacto.",
+  "types": {
+    "NOTE": "Nota",
+    "CALL": "Llamada",
+    "MEETING": "Reunión",
+    "EMAIL": "Correo"
+  },
+  "form": {
+    "title": "Asunto o Resumen",
+    "type": "Tipo de Interacción",
+    "description": "Detalles adicionales..."
   }
+}
 
 }

@@ -1,33 +1,37 @@
 import { z } from 'zod';
 
 export const createContactSchema = z.object({
-  body: z.object({
-    firstName: z.string().min(1, 'El nombre es obligatorio'),
-    lastName: z.string().optional(),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
-    phone: z.string().optional(),
-  }),
+  firstName: z
+    .string({ message: 'El nombre es obligatorio' })
+    .trim()
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(50, 'El nombre no puede superar los 50 caracteres'),
+  lastName: z
+    .string()
+    .trim()
+    .max(50, 'El apellido no puede superar los 50 caracteres')
+    .optional()
+    .nullable()
+    .or(z.literal('')),
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .email('Formato de correo electrónico inválido')
+    .optional()
+    .nullable()
+    .or(z.literal('')),
+  phone: z
+    .string()
+    .trim()
+    .max(25, 'Número de teléfono demasiado largo')
+    .optional()
+    .nullable()
+    .or(z.literal('')),
 });
 
-export const getContactByIdSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('ID de contacto inválido'),
-  }),
+export const contactIdParamSchema = z.object({
+  id: z.string().uuid('El identificador debe ser un UUID válido'),
 });
 
-export const updateContactSchema = z.object({
-  params: z.object({
-    id: z.string().uuid('ID de contacto inválido'),
-  }),
-  body: z.object({
-    firstName: z.string().min(1, 'El nombre es obligatorio').optional(),
-    lastName: z.string().optional(),
-    email: z.string().email('Email inválido').optional().or(z.literal('')),
-    phone: z.string().optional(),
-  }),
-});
-
-// Tipos inferidos
-export type CreateContactInput = z.infer<typeof createContactSchema>['body'];
-export type ContactParams = z.infer<typeof getContactByIdSchema>['params'];
-export type UpdateContactInput = z.infer<typeof updateContactSchema>['body'];
+export type CreateContactDTO = z.infer<typeof createContactSchema>;

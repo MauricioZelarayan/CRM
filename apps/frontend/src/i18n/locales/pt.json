@@ -72,11 +72,27 @@
       "selectContact": "Selecionar contato..."
     }
   },
-  
+
   "navigation": {
-    "home": "Início",
-    "contacts": "Contatos",
-    "deals": "Negócios"
+      "home": "Início",
+      "contacts": "Contatos",
+      "deals": "Negócios"
+    },
+    "activities": {
+    "title": "Histórico de Atividades",
+    "addActivity": "Registrar Atividade",
+    "empty": "Nenhuma atividade registrada para este contato.",
+    "types": {
+      "NOTE": "Nota",
+      "CALL": "Ligação",
+      "MEETING": "Reunião",
+      "EMAIL": "E-mail"
+    },
+    "form": {
+      "title": "Assunto ou Resumo",
+      "type": "Tipo de Interação",
+      "description": "Detalhes adicionais..."
+    }
   }
   
 }

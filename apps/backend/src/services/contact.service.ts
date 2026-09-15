@@ -1,71 +1,37 @@
 import { prisma } from '../config/prisma';
+import type { CreateContactDTO } from '../schemas/contact.schema';
 
-export interface CreateContactDTO {
-  firstName: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  organizationId: string;
-}
+export const contactService = {
+  async getAll(organizationId: string) {
+    return prisma.contact.findMany({
+      where: { organizationId },
+      orderBy: { createdAt: 'desc' },
+    });
+  },
 
-export interface UpdateContactDTO {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-}
+  async create(organizationId: string, data: CreateContactDTO) {
+    return prisma.contact.create({
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName ? data.lastName.trim() : null,
+        email: data.email ? data.email.trim().toLowerCase() : null,
+        phone: data.phone ? data.phone.trim() : null,
+        organizationId, // Aislamiento garantizado
+      },
+    });
+  },
 
-export const getAllContacts = async (organizationId: string) => {
-  return prisma.contact.findMany({
-    where: { organizationId },
-    orderBy: { createdAt: 'desc' },
-  });
-};
+  async delete(id: string, organizationId: string) {
+    const contact = await prisma.contact.findFirst({
+      where: { id, organizationId },
+    });
 
-export const getContactById = async (id: string, organizationId: string) => {
-  return prisma.contact.findFirst({
-    where: {
-      id,
-      organizationId, // Aislamiento multi-tenant obligatorio (OWASP #3)
-    },
-  });
-};
+    if (!contact) {
+      throw new Error('Contacto no encontrado en su organización');
+    }
 
-export const createContact = async (data: CreateContactDTO) => {
-  return prisma.contact.create({
-    data: {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      organizationId: data.organizationId,
-    },
-  });
-};
-
-export const updateContact = async (id: string, organizationId: string, data: UpdateContactDTO) => {
-  // Verificamos pertenencia al tenant antes de actualizar
-  const contact = await prisma.contact.findFirst({
-    where: { id, organizationId },
-  });
-
-  if (!contact) return null;
-
-  return prisma.contact.update({
-    where: { id },
-    data,
-  });
-};
-
-export const deleteContact = async (id: string, organizationId: string) => {
-  // Verificamos pertenencia al tenant antes de eliminar
-  const contact = await prisma.contact.findFirst({
-    where: { id, organizationId },
-  });
-
-  if (!contact) return null;
-
-  return prisma.contact.delete({
-    where: { id },
-  });
+    return prisma.contact.delete({
+      where: { id },
+    });
+  },
 };

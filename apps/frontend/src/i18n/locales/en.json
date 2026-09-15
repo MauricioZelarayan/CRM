@@ -76,5 +76,21 @@
     "home": "Home",
     "contacts": "Contacts",
     "deals": "Deals"
+  },
+  "activities": {
+    "title": "Activity History",
+    "addActivity": "Log Activity",
+    "empty": "No activities recorded for this contact.",
+    "types": {
+      "NOTE": "Note",
+      "CALL": "Call",
+      "MEETING": "Meeting",
+      "EMAIL": "Email"
+    },
+    "form": {
+      "title": "Subject or Summary",
+      "type": "Interaction Type",
+      "description": "Additional details..."
+    }
   }
 }

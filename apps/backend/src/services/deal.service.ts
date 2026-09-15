@@ -1,10 +1,11 @@
 import { prisma } from '../config/prisma';
-import { type CreateDealDTO, type UpdateDealStageDTO } from '../schemas/deal.schema';
+import { CreateDealDTO, UpdateDealStageDTO } from '../schemas/deal.schema';
 
 export const dealService = {
-  async getAllByOrganization(organizationId: string) {
+  // Listar tratos del tenant actual
+  async getAll(organizationId: string) {
     return prisma.deal.findMany({
-      where: { organizationId },
+      where: { organizationId }, // Aislamiento multi-tenant obligatorio
       include: {
         contact: {
           select: {
@@ -19,18 +20,18 @@ export const dealService = {
     });
   },
 
+  // Crear trato asegurando que el contacto también pertenezca a la misma organización
   async create(organizationId: string, data: CreateDealDTO) {
     if (data.contactId) {
-      // Verificar que el contacto pertenezca a la misma organización
       const contactExists = await prisma.contact.findFirst({
         where: {
           id: data.contactId,
-          organizationId,
+          organizationId, // Evita vincular contactos de otros tenants[cite: 4]
         },
       });
 
       if (!contactExists) {
-        throw new Error('El contacto asociado no existe en su organización');
+        throw new Error('El contacto asociado no pertenece a tu organización');
       }
     }
 
@@ -40,21 +41,14 @@ export const dealService = {
         value: data.value,
         stage: data.stage,
         contactId: data.contactId || null,
-        organizationId,
-      },
-      include: {
-        contact: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-          },
-        },
+        organizationId, // Forzado por backend, no por payload del cliente[cite: 4]
       },
     });
   },
 
+  // Cambiar etapa comprobando tenencia
   async updateStage(id: string, organizationId: string, data: UpdateDealStageDTO) {
+    // 1. Verificar existencia dentro del tenant
     const deal = await prisma.deal.findFirst({
       where: { id, organizationId },
     });
@@ -63,12 +57,14 @@ export const dealService = {
       throw new Error('Trato u oportunidad no encontrada');
     }
 
+    // 2. Actualizar de forma segura
     return prisma.deal.update({
       where: { id },
       data: { stage: data.stage },
     });
   },
 
+  // Eliminar comprobando tenencia
   async delete(id: string, organizationId: string) {
     const deal = await prisma.deal.findFirst({
       where: { id, organizationId },

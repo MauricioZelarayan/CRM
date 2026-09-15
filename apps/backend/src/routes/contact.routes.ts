@@ -1,27 +1,16 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/auth';
-import { checkRole } from '../middlewares/checkRole';
 import { validate } from '../middlewares/validate';
-import {
-  createContactSchema,
-  updateContactSchema,
-  getContactByIdSchema,
-} from '../schemas/contact.schema';
-import * as contactController from '../controllers/contact.controller';
+import { checkRole } from '../middlewares/checkRole';
+import { createContactSchema, contactIdParamSchema } from '../schemas/contact.schema';
+import { getContacts, createContact, deleteContact } from '../controllers/contact.controller';
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.get('/', contactController.getContacts);
-router.get('/:id', validate(getContactByIdSchema), contactController.getContact);
-router.post('/', validate(createContactSchema), contactController.createContact);
-router.put('/:id', validate(updateContactSchema), contactController.updateContact);
-router.delete(
-  '/:id',
-  checkRole(['ADMIN', 'SUPERADMIN']),
-  validate(getContactByIdSchema),
-  contactController.deleteContact
-);
+router.get('/', getContacts);
+router.post('/', validate(createContactSchema, 'body'), createContact);
+router.delete('/:id', checkRole(['ADMIN', 'SUPERADMIN']), validate(contactIdParamSchema, 'params'), deleteContact);
 
 export default router;
