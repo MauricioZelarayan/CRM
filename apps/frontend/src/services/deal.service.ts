@@ -2,6 +2,26 @@ import { api } from './api';
 
 export type DealStage = 'LEAD' | 'QUALIFIED' | 'PROPOSAL' | 'NEGOTIATION' | 'WON' | 'LOST';
 
+export interface BaseDealDTO {
+  title: string;
+  stage?: DealStage;
+  contactId?: string | null;
+}
+
+export interface CatalogDealDTO extends BaseDealDTO {
+  quoteType: 'CATALOG';
+  productId: string;
+  quantity: number;
+}
+
+export interface ManualDealDTO extends BaseDealDTO {
+  quoteType: 'MANUAL';
+  manualValue: number;
+}
+
+// La creación exige respetar uno de los dos contratos exactos
+export type CreateDealDTO = CatalogDealDTO | ManualDealDTO;
+
 export interface Deal {
   id: string;
   title: string;
@@ -15,13 +35,6 @@ export interface Deal {
     email?: string | null;
   } | null;
   createdAt: string;
-}
-
-export interface CreateDealDTO {
-  title: string;
-  value: number;
-  stage: DealStage;
-  contactId?: string | null;
 }
 
 export const dealService = {

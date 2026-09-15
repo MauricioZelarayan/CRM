@@ -88,7 +88,8 @@
       "home": "Início",
       "contacts": "Contatos",
       "deals": "Negócios",
-      "settings": "Configurações"
+      "settings": "Configurações",
+      "products": "Produtos"
     },
     "activities": {
     "title": "Histórico de Atividades",
@@ -136,6 +137,18 @@
       "NOTIFY_TEAM": "Notificar equipe de vendas"
     },
     "noWorkflows": "Nenhuma regra de automação ativa encontrada."
+  },
+  "products": {
+    "title": "Catálogo de Produtos e Serviços",
+    "subtitle": "Gerencie os itens disponíveis para orçar em negócios",
+    "create": "Novo Produto",
+    "table": {
+      "name": "Nome / SKU",
+      "price": "Preço Base",
+      "status": "Status",
+      "actions": "Ações"
+    },
+    "noProducts": "Nenhum produto cadastrado no catálogo."
   }
   
 }

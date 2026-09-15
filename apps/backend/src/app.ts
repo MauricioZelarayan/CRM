@@ -11,7 +11,7 @@ import teamRoutes from './routes/team.routes';
 import analyticsRoutes from './routes/analytics.routes';
 import exportRoutes from './routes/export.routes';
 import workflowRoutes from './routes/workflow.routes';
-
+import productRoutes from './routes/product.routes';
 
 const app = express();
 
@@ -45,6 +45,9 @@ app.use('/api/export', exportRoutes);
 
 // Rutas de Workflows
 app.use('/api/workflows', workflowRoutes);
+
+// Rutas de Productos
+app.use('/api/products', productRoutes);
 
 // Manejador de errores
 app.use(errorHandler);

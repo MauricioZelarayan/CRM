@@ -10,8 +10,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { DealsPage } from './pages/DealsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { WorkflowsPage } from './pages/WorkflowsPage';
-
-
+import { ProductsPage } from './pages/ProductsPage';
 
 export default function App() {
   return (
@@ -28,6 +27,7 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/contacts" element={<ContactsPage />} />
               <Route path="/deals" element={<DealsPage />} />
+              <Route path="/products" element={<ProductsPage />} />
               {/* Rutas Exclusivas para Administradores */}
               <Route element={<RoleRoute allowedRoles={['ADMIN', 'SUPERADMIN']} />}>
                 <Route path="/settings" element={<SettingsPage />} />

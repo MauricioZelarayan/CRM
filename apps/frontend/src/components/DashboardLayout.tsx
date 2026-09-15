@@ -95,6 +95,22 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               {t('navigation.deals')}
             </NavLink>
 
+            <NavLink
+              to="/products"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                  isActive
+                    ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] font-bold shadow-sm'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)]'
+                }`
+              }
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+              {t('navigation.products')}
+            </NavLink>
+
             {/* Configuración de Organización (Solo visible para ADMIN / SUPERADMIN) */}
             {isAdmin && (
               <div className="pt-3 mt-3 border-t border-[var(--border-color)]">

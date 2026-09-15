@@ -90,7 +90,8 @@
     "home": "Inicio",
     "contacts": "Contactos",
     "deals": "Deals",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "products": "Productos"
   },
   "activities": {
   "title": "Historial de Actividades",
@@ -138,6 +139,18 @@
       "NOTIFY_TEAM": "Notificar al equipo comercial"
     },
     "noWorkflows": "No hay reglas de automatización activas."
+  },
+  "products": {
+    "title": "Catálogo de Productos y Servicios",
+    "subtitle": "Administra los artículos disponibles para cotizar en oportunidades de venta",
+    "create": "Nuevo Producto",
+    "table": {
+      "name": "Nombre / SKU",
+      "price": "Precio Base",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "noProducts": "No hay productos registrados en el catálogo."
   }
 
 }

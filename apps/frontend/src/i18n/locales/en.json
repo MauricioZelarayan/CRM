@@ -87,7 +87,8 @@
     "home": "Home",
     "contacts": "Contacts",
     "deals": "Deals",
-    "settings": "Settings"
+    "settings": "Settings",
+    "products": "Products"
   },
   "activities": {
     "title": "Activity History",
@@ -135,5 +136,17 @@
       "NOTIFY_TEAM": "Notify sales team"
     },
     "noWorkflows": "No active automation rules found."
+  },
+  "products": {
+    "title": "Products & Services Catalog",
+    "subtitle": "Manage items available to quote in sales deals",
+    "create": "New Product",
+    "table": {
+      "name": "Name / SKU",
+      "price": "Base Price",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "noProducts": "No products registered in catalog."
   }
 }
