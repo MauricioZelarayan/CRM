@@ -5,6 +5,7 @@ import { dealService, type Deal, type DealStage } from '../services/deal.service
 import { useAuth } from '../hooks/useAuth';
 import { DashboardLayout } from '../components/DashboardLayout';
 import { CreateDealModal } from '../components/CreateDealModal';
+import { exportService } from '../services/export.service';
 
 const STAGES: DealStage[] = ['LEAD', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST'];
 
@@ -178,6 +179,19 @@ export const DealsPage: React.FC = () => {
                   <p className="text-[11px] font-mono text-[var(--color-primary)] mt-1 font-semibold">
                     ${stageTotal.toLocaleString()}
                   </p>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => exportService.downloadDealsCsv()}
+                      className="px-3 py-2 bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-[var(--color-primary)] text-[var(--text-main)] text-xs font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm"
+                    >
+                      <svg className="w-3.5 h-3.5 text-[var(--text-muted)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Exportar CSV
+                    </button>
+                    {/* Botón existente + Agregar Oportunidad */}
+                  </div>
                 </div>
 
                 {/* Zona de Drop y Tarjetas */}
