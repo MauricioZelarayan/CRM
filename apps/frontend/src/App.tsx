@@ -8,6 +8,7 @@ import { ContactsPage } from './pages/ContactsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ThemeProvider } from './context/ThemeContext';
 import { DealsPage } from './pages/DealsPage';
+import { SettingsPage } from './pages/SettingsPage';
 
 export default function App() {
   return (
@@ -24,12 +25,11 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/contacts" element={<ContactsPage />} />
               <Route path="/deals" element={<DealsPage />} />
-            </Route>
-
               {/* Rutas Exclusivas para Administradores */}
               <Route element={<RoleRoute allowedRoles={['ADMIN', 'SUPERADMIN']} />}>
-                <Route path="/settings" element={<div className="p-8"><h1>Configuración de Organización</h1></div>} />
+                <Route path="/settings" element={<SettingsPage />} />
               </Route>
+            </Route>
 
             {/* Redirección por defecto */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

@@ -78,7 +78,8 @@
   "navigation": {
       "home": "Início",
       "contacts": "Contatos",
-      "deals": "Negócios"
+      "deals": "Negócios",
+      "settings": "Configurações"
     },
     "activities": {
     "title": "Histórico de Atividades",
@@ -95,6 +96,14 @@
       "type": "Tipo de Interação",
       "description": "Detalhes adicionais..."
     }
+  },
+  "settings": {
+    "title": "Organization Settings",
+    "subtitle": "Manage team members and their access permissions",
+    "team": "Team Members",
+    "invite": "Invite Member",
+    "columns": { "user": "User", "role": "Role", "date": "Joined Date", "actions": "Actions" },
+    "roles": { "ADMIN": "Administrator", "USER": "Sales / User" }
   }
   
 }

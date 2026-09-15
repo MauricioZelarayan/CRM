@@ -80,7 +80,8 @@
   "navigation": {
     "home": "Inicio",
     "contacts": "Contactos",
-    "deals": "Deals"
+    "deals": "Deals",
+    "settings": "Configuración"
   },
   "activities": {
   "title": "Historial de Actividades",
@@ -97,6 +98,14 @@
     "type": "Tipo de Interacción",
     "description": "Detalles adicionales..."
   }
-}
+},
+"settings": {
+    "title": "Ajustes de Organización",
+    "subtitle": "Administra los miembros del equipo y sus permisos de acceso",
+    "team": "Equipo de Trabajo",
+    "invite": "Invitar Miembro",
+    "columns": { "user": "Usuario", "role": "Rol", "date": "Fecha de Alta", "actions": "Acciones" },
+    "roles": { "ADMIN": "Administrador", "USER": "Vendedor / Usuario" }
+  }
 
 }

@@ -1,10 +1,26 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../hooks/useAuth';
 import { UserMenu } from './UserMenu';
+import { LanguageSelector } from './LanguageSelector';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // OWASP #3: Validación en cliente para renderizado defensivo de UI
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
+
+  // Resolución del nombre de página para el Breadcrumb dinámico
+  const getCurrentPageTitle = () => {
+    const path = location.pathname;
+    if (path.startsWith('/contacts')) return t('navigation.contacts');
+    if (path.startsWith('/deals')) return t('navigation.deals');
+    if (path.startsWith('/settings')) return t('navigation.settings');
+    return t('navigation.home');
+  };
 
   return (
     <div className="flex h-screen w-full bg-[var(--bg-main)] text-[var(--text-main)] antialiased overflow-hidden font-sans transition-colors duration-200">
@@ -20,13 +36,13 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               <span className="font-bold text-sm tracking-tight text-[var(--text-main)] block truncate">
                 CRM Core
               </span>
-              <span className="text-[10px] text-[var(--color-secondary)] font-medium px-2 py-0.5 bg-[var(--bg-main)] rounded-full inline-block border border-[var(--border-color)]">
-                Tenant Active
+              <span className="text-[10px] text-[var(--color-secondary)] font-medium px-2 py-0.5 bg-[var(--bg-main)] rounded-full inline-block border border-[var(--border-color)] truncate max-w-[150px]">
+                {user?.organizationId ? `Tenant: ${user.organizationId.substring(0, 8)}` : 'Tenant Active'}
               </span>
             </div>
           </div>
 
-          {/* Menú de Navegación */}
+          {/* Menú de Navegación Principal */}
           <nav className="p-3 space-y-1">
             {/* Inicio */}
             <NavLink
@@ -78,7 +94,37 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               </svg>
               {t('navigation.deals')}
             </NavLink>
+
+            {/* Configuración de Organización (Solo visible para ADMIN / SUPERADMIN) */}
+            {isAdmin && (
+              <div className="pt-3 mt-3 border-t border-[var(--border-color)]">
+                <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] block mb-1">
+                  {t('navigation.administration') || 'Administración'}
+                </span>
+                <NavLink
+                  to="/settings"
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                      isActive
+                        ? 'bg-[var(--color-primary)] text-[var(--color-primary-text)] font-bold shadow-sm'
+                        : 'text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-card)]'
+                    }`
+                  }
+                >
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {t('navigation.settings')}
+                </NavLink>
+              </div>
+            )}
           </nav>
+        </div>
+
+        {/* Pie del Sidebar: Selector de Idioma */}
+        <div className="p-3 border-t border-[var(--border-color)]">
+          <LanguageSelector />
         </div>
       </aside>
 
@@ -88,7 +134,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold text-[var(--text-muted)]">CRM</span>
             <span className="text-[var(--border-color)]">/</span>
-            <span className="text-xs font-semibold text-[var(--text-main)]">{t('navigation.deals')}</span>
+            <span className="text-xs font-semibold text-[var(--text-main)]">{getCurrentPageTitle()}</span>
           </div>
 
           <UserMenu />
