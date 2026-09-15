@@ -6,6 +6,8 @@ import axios from 'axios';
 import { authService } from '../services/auth.service';
 import { useAuth } from '../hooks/useAuth';
 import { LanguageSelector } from '../components/LanguageSelector';
+import { ThemeToggle } from '../components/ThemeToggle';
+
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -55,6 +57,12 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)] p-4 transition-colors">
+            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+              <div className="w-36">
+                <LanguageSelector />
+              </div>
+              <ThemeToggle />
+            </div>
       <div className="max-w-md w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-2xl shadow-xl p-8 transition-colors">
         <div className="flex justify-between items-center mb-6 border-b border-[var(--border-color)] pb-4">
           <div>
@@ -67,7 +75,6 @@ export const LoginPage: React.FC = () => {
             <h2 className="text-xl font-bold tracking-tight text-[var(--text-main)]">{t('auth.loginTitle')}</h2>
             <p className="text-xs text-[var(--text-muted)] mt-0.5">Ingresa tus credenciales para continuar.</p>
           </div>
-          <LanguageSelector />
         </div>
 
         {error && (

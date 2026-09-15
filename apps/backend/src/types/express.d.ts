@@ -2,10 +2,11 @@ import { Role } from '@prisma/client';
 
 export interface UserPayload {
   id: string;
-  userId: string;
   email: string;
-  role: Role;
+  userId: string;
+  role: 'SUPERADMIN' | 'ADMIN' | 'USER';
   organizationId: string;
+  organizationName?: string;
 }
 
 declare global {

@@ -84,6 +84,7 @@
   "contact": "Contact"
   },
   "navigation": {
+    "administration": "Administration",
     "home": "Home",
     "contacts": "Contacts",
     "deals": "Deals",

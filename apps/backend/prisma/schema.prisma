@@ -54,6 +54,12 @@ enum TicketPriority {
   URGENT
 }
 
+enum ThemePreference {
+  LIGHT
+  DARK
+  SYSTEM
+}
+
 // ==========================================
 // MODELOS PRINCIPALES
 // ==========================================
@@ -84,6 +90,7 @@ model User {
   firstName       String
   lastName        String?
   role            Role            @default(USER)
+  theme          ThemePreference @default(LIGHT)
   organizationId  String
   organization    Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   assignedTickets Ticket[] // <-- Relación inversa para Ticket.assignedTo

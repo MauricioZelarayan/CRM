@@ -3,7 +3,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { UserMenu } from './UserMenu';
-import { LanguageSelector } from './LanguageSelector';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation();
@@ -13,11 +12,17 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   // OWASP #3: Validación en cliente para renderizado defensivo de UI
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERADMIN';
 
+  // Nombre e inicial de la empresa/organización (Fallback seguro a "CRM Core")
+  const organizationName = user?.organization?.name || user?.organizationName || 'CRM Core';
+  const orgInitial = organizationName.charAt(0).toUpperCase();
+
   // Resolución del nombre de página para el Breadcrumb dinámico
   const getCurrentPageTitle = () => {
     const path = location.pathname;
     if (path.startsWith('/contacts')) return t('navigation.contacts');
     if (path.startsWith('/deals')) return t('navigation.deals');
+    if (path.startsWith('/products')) return t('navigation.products');
+    if (path.startsWith('/workflows')) return 'Automatizaciones';
     if (path.startsWith('/settings')) return t('navigation.settings');
     return t('navigation.home');
   };
@@ -27,17 +32,14 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       {/* Sidebar Lateral Fijo */}
       <aside className="w-64 bg-[var(--bg-surface)] border-r border-[var(--border-color)] flex flex-col justify-between shrink-0 h-full transition-colors duration-200">
         <div>
-          {/* Logo y Tenant Status */}
+          {/* Logo y Nombre de la Empresa Dinámico */}
           <div className="p-5 border-b border-[var(--border-color)] flex items-center gap-3">
             <div className="h-8 w-8 bg-[var(--color-primary)] text-[var(--color-primary-text)] rounded-xl flex items-center justify-center font-bold shadow-md text-sm shrink-0">
-              C
+              {orgInitial}
             </div>
             <div className="min-w-0">
               <span className="font-bold text-sm tracking-tight text-[var(--text-main)] block truncate">
-                CRM Core
-              </span>
-              <span className="text-[10px] text-[var(--color-secondary)] font-medium px-2 py-0.5 bg-[var(--bg-main)] rounded-full inline-block border border-[var(--border-color)] truncate max-w-[150px]">
-                {user?.organizationId ? `Tenant: ${user.organizationId.substring(0, 8)}` : 'Tenant Active'}
+                {organizationName}
               </span>
             </div>
           </div>
@@ -153,11 +155,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               </div>
             )}
           </nav>
-        </div>
-
-        {/* Pie del Sidebar: Selector de Idioma */}
-        <div className="p-3 border-t border-[var(--border-color)]">
-          <LanguageSelector />
         </div>
       </aside>
 

@@ -87,6 +87,7 @@
   },
 
   "navigation": {
+    "administration": "Administración",
     "home": "Inicio",
     "contacts": "Contactos",
     "deals": "Deals",

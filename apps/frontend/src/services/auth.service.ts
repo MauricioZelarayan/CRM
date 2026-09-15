@@ -4,15 +4,15 @@ export interface User {
   id: string;
   email: string;
   firstName: string;
-  lastName: string;
+  lastName?: string | null;
   role: 'SUPERADMIN' | 'ADMIN' | 'USER';
   organizationId: string;
   organization?: {
-    id: string;
     name: string;
-    slug: string;
   };
-}
+  organizationName?: string;
+  theme?: 'LIGHT' | 'DARK' | 'SYSTEM';
+};
 
 export interface RegisterDTO {
   organizationName: string;

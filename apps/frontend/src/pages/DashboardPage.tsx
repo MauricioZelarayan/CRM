@@ -58,11 +58,6 @@ export const DashboardPage: React.FC = () => {
             {t('dashboard.subtitle')}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-mono text-[var(--text-muted)] bg-[var(--bg-main)] px-3 py-1.5 rounded-xl border border-[var(--border-color)]">
-            Rol: <strong className="text-[var(--text-main)]">{user?.role || 'USER'}</strong>
-          </span>
-        </div>
       </div>
 
       {error && (
