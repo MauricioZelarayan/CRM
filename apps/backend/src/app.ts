@@ -8,6 +8,7 @@ import contactRoutes from './routes/contact.routes';
 import dealRoutes from './routes/deal.routes';
 import activityRoutes from './routes/activity.routes';
 import teamRoutes from './routes/team.routes';
+import analyticsRoutes from './routes/analytics.routes';
 
 
 const app = express();
@@ -31,7 +32,11 @@ app.use('/api/deals', dealRoutes);
 // Rutas de Actividades (Activities)
 app.use('/api/activities', activityRoutes);
 
+// Rutas de Equipo
 app.use('/api/team', teamRoutes);
+
+// Rutas de Analíticas
+app.use('/api/analytics', analyticsRoutes);
 
 // Manejador de errores
 app.use(errorHandler);

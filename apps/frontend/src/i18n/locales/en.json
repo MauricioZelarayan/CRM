@@ -20,7 +20,16 @@
   },
   "dashboard": {
     "welcome": "Hello, {{name}}!",
-    "subtitle": "Tenant overview and acquisition metrics.",
+    "subtitle": "Executive overview of your sales pipeline and team activity",
+    "kpis": {
+      "pipelineValue": "Pipeline Value",
+      "wonValue": "Closed Won",
+      "winRate": "Win Rate",
+      "contacts": "Total Contacts"
+    },
+    "pipelineBreakdown": "Stage Breakdown",
+    "recentActivity": "Recent Activity",
+    "noActivities": "No recorded activities yet.",
     "roleLabel": "Role:",
     "totalContacts": "Total Contacts",
     "totalContactsDesc": "Leads in database",

@@ -20,7 +20,16 @@
   },
   "dashboard": {
     "welcome": "Olá, {{name}}!",
-    "subtitle": "Visão geral do tenant e métricas de aquisição.",
+    "subtitle": "Visão executiva do pipeline de vendas e atividades da equipe",
+    "kpis": {
+      "pipelineValue": "Valor do Pipeline",
+      "wonValue": "Receita Ganha",
+      "winRate": "Taxa de Sucesso",
+      "contacts": "Total de Contatos"
+    },
+    "pipelineBreakdown": "Distribuição por Estágios",
+    "recentActivity": "Atividades Recentes",
+    "noActivities": "Nenhuma atividade registrada ainda.",
     "roleLabel": "Função:",
     "totalContacts": "Total de Contatos",
     "totalContactsDesc": "Leads no banco de dados",
